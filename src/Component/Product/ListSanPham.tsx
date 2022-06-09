@@ -1,55 +1,49 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../App/hook'
+import { addPro } from '../../Feature/CartSlice';
+import { getAllProduct } from '../../Feature/ProductSlice';
+import { SanPhamType } from '../../TypeState/ProductType';
 
-export default class ListSanPham extends Component {
-  render() {
+export default function ListSanPham() {
+  const dispatch = useAppDispatch();
+  const listData = useAppSelector(state => state.listProduct);
+  let navigate = useNavigate();
+  useEffect(() => {
+    dispatch(getAllProduct())
+  }, []);
+  const loaiSP: SanPhamType[] = listData.listProduct
+  const showProduct = loaiSP.map((item, index) => {
     return (
-      <div className='listSanpham'>
-        <h4 className='text-warning mt-3'>Danh sách sản phẩm</h4>
-        <div className="container-fluid d-flex justify-content-center">
-          <div className="row mt-1" >
-            <div className="col-sm-4 divPro" > 
-              <div className="card">
-                <img src="https://imgur.com/edOjtEC.png" className="card-img-top" width="100%" alt=""/>
-                <div className="card-body pt-0 px-0">
-                  <h3 className="text-dark key pl-3">Sản phẩm 1</h3>
-                  <p className="d-flex justify-content-center text-danger">400.000.000</p>
-                  <p className="d-flex justify-content-center text-dark">Đơn vị: <span className='text-primary px-2'> Chiếc</span></p>
-                  <div className="mx-3 mt-3 mb-2">
-                    <button type="button" className="btn btn-danger btn-block"><small>Add to cart</small></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-4 divPro">
-              <div className="card">
-                <img src="https://i.imgur.com/SKZolYE.png" className="card-img-top" width="100%"  alt=""/>
-                <div className="card-body pt-0 px-0">
-                  <h3 className="text-dark key pl-3">Sản phẩm 2</h3>
-                  <p className="d-flex justify-content-center text-danger">600.000.000</p>
-                  <p className="d-flex justify-content-center text-dark">Đơn vị: <span className='text-primary px-2'> Chiếc</span></p>
-                  <div className="mx-3 mt-3 mb-2">
-                    <button type="button" className="btn btn-danger btn-block"><small>Add to cart</small></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-4 divPro">
-              <div className="card">
-                <img src="https://imgur.com/gUQNKPd.png" className="card-img-top" width="100%" alt="" />
-                <div className="card-body pt-0 px-0">
-                  <h3 className="text-dark key pl-3">Sản phẩm 3</h3>
-                  <p className="d-flex justify-content-center text-danger">700.000.000</p>
-                  <p className="d-flex justify-content-center text-dark">Đơn vị: <span className='text-primary px-2'> Chiếc</span></p>
-                  <div className="mx-3 mt-3 mb-2">
-                    <button type="button" className="btn btn-danger btn-block"><small>Add to cart</small></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
+      <div key={index} className='pro' style={{
+        width: "300px", margin: '20px 20px', height: "420px", borderRadius: "5px", display: 'flex', flexDirection: 'column', backgroundColor: 'white', textAlign: 'center', alignItems: 'center'
+      }}>
+        <img alt='' src={item.image} style={{
+          width: "290px", height: "250px", marginTop: '10px', borderRadius: '5px'
+        }} ></img>
+        <span style={{
+          fontSize: '20px', fontWeight: 'bold'
+        }}>{item.name}</span>
+        <p >Gia: <span style={{ color: 'red' }}> {item.price}</span></p>
+        <p>Don vi: <span style={{ color: 'blue' }}> {item.init}</span></p>
+        <button onClick={() => {
+         dispatch(addPro(item.name, item.image, item.price, 1));
+         navigate('/cart')
+        }}
+          style={{ backgroundColor: 'red', padding: '5px 10px', color: 'white', border: 'none', borderRadius: '5px', fontWeight: 'bold' }}>Add to cart</button>
       </div>
     )
-  }
+  });
+  return (
+    <div className='listSanpham'>
+      <h4 className='text-dark mt-3'>Danh sách sản phẩm</h4>
+      <div className='divPro' style={{
+        display: "flex",
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+      }}>
+        {loaiSP ? showProduct : ""}
+      </div>
+    </div>
+  )
 }

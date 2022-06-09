@@ -6,12 +6,23 @@ import Footer from './Component/HeaderAndFooter/Footer';
 import { Route, Routes } from 'react-router-dom';
 import AddNewProduct from './Component/AddProduct/AddNewProduct';
 import GioHang from './Component/Cart/GioHang';
+import Login from './Component/Login/Login';
 
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import { useEffect } from 'react';
+import AddProduct from './Component/AddProduct/AddProduct';
+
+const config = {
+  apiKey: 'AIzaSyAeue-AsYu76MMQlTOM-KlbYBlusW9c1FM',
+  authDomain: 'myproject-1234.firebaseapp.com',
+};
+firebase.initializeApp(config);
 function App() {
   return (
     <div>
       <div className='body' style={{
-        display:'flex',
+        display: 'flex',
         flexDirection: 'row',
         width: '100%',
         height: '100%',
@@ -21,10 +32,10 @@ function App() {
           border: '2px solid black'
 
         }}>
-          <Slider/>
+          <Slider />
         </div>
         <div className='content' style={{
-          display:'flex',
+          display: 'flex',
           flexDirection: 'column',
           width: '80%',
           border: '2px solid black',
@@ -32,9 +43,18 @@ function App() {
           alignItems: 'center',
           position: 'relative'
         }}>
-          <Header/>
-          <ListSanPham/>
-          <Footer/>
+          <Header />
+          <div className='backGround'>
+            <Routes>
+              <Route path='/' element={<ListSanPham />}></Route>
+              <Route path='/product' element={<AddNewProduct />}></Route>
+              <Route path='/cart' element={<GioHang />}></Route>
+              <Route path='/login' element={<Login />}></Route>
+              <Route path='/qlSanPham' element={<AddProduct />}></Route>
+
+            </Routes>
+          </div>
+          <Footer />
         </div>
 
       </div>

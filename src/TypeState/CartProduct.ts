@@ -1,7 +1,7 @@
-export interface SanPhamType {
+export interface CartProduct {
 	id: any;
     name: string;
     image: string;
     price: number;
-    init: string;
+    count: number;
 }

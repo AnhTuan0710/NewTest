@@ -11,23 +11,23 @@ export default class Header extends Component {
                 display: 'flex',
                 justifyContent: 'space-between',
                 flexDirection: 'row',
-                backgroundImage: 'linear-gradient(to bottom right, red, yellow)',
-                color: 'white',
+                backgroundImage: 'linear-gradient(to bottom right, pink, yellow)',
+                color: 'black',
             }}>
                 <div className='left' style={{
                    width: '70%',
                    height: '50px',
                    lineHeight: '50px',
                    textAlign: 'left',
-                   color: 'white',
+                   color: 'black',
                 }}>
                     <ul>
-                        <li><a href='#'>
-                        <HomeOutlined /> Home</a></li>
-                        <li><a href='#'>
-                        <FileProtectOutlined /> Product</a></li>
-                        <li><a href='#'>
-                        <ShoppingCartOutlined /> Cart</a></li>
+                        <li><Link to='/'>
+                        <HomeOutlined /> Home</Link></li>
+                        <li><Link to='/product'>
+                        <FileProtectOutlined /> Product</Link></li>
+                        <li><Link to='/cart'>
+                        <ShoppingCartOutlined /> Cart</Link></li>
                     </ul>
                 </div>
                 <div className='right' style={{
@@ -36,12 +36,12 @@ export default class Header extends Component {
                    lineHeight: '50px',
                    textAlign: 'right',
                    marginRight:'20px',
-                   color: 'white',
                    fontWeight:'bold',
                    cursor:'pointer'
                 }}>
-                   <span>
-                   <PlayCircleOutlined /> Login</span>
+                   <Link to='/login'>
+                       <span><PlayCircleOutlined /> Login</span>
+                    </Link>
                 </div>
             </div>
         )
