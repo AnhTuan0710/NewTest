@@ -1,9 +1,9 @@
-export interface HoaDonType {
+export interface ReceiptType {
 	id: any;
-    idSP: ListSanPham[];
+    idSP: ListProduct[];
     idUser: string;
 }
-export interface ListSanPham {
+export interface ListProduct {
 	id: any;
     name: string;
     image: string;

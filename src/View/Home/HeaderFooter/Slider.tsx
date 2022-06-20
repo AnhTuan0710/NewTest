@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import string from '../../../Constants/String'
 
 export default class Slider extends Component {
   render() {
@@ -15,30 +16,32 @@ export default class Slider extends Component {
         <hr className='text-dark 2px'/>
         <ul className='nav nav-pills flex-column mb-auto'>
           <li className='nav-item'>
-            <Link to="/" className='nav-link' aria-current='page'>
+            <Link to="/" className='nav-link' aria-current='page' style={{color: 'yellow'}}>
               <svg className='bi me-2' style={{
                 width: '16px',
                 height: '16px',
               }}></svg>
-              Home
+             {string.Home}
             </Link>
           </li>
           <li className='nav-item'>
-            <Link to="/" className='nav-link' aria-current='page'>
+            <Link to="/" className='nav-link' aria-current='page' style={{color: 'yellow'}}>
               <svg className='bi me-2' style={{
                 width: '16px',
                 height: '16px',
+                color:"white"
               }}></svg>
-              Dashboard
+              {string.Dashboard}
             </Link>
           </li>
           <li className='nav-item'>
-            <Link to="/qlSanPham" className='nav-link ' aria-current='page'>
+            <Link to="/qlSanPham" className='nav-link ' aria-current='page' style={{color: 'yellow'}}>
               <svg className='bi me-2' style={{
                 width: '16px',
                 height: '16px',
+                color:"white"
               }}></svg>
-              Quản lí sản phẩm
+              {string.Product_management}
             </Link>
           </li>
         </ul>

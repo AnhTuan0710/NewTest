@@ -1,4 +1,4 @@
-export interface SanPhamType {
+export interface ProductType {
 	id: any;
     name: string;
     image: string;

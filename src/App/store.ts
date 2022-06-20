@@ -1,15 +1,20 @@
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import listProducts from '../Feature/ProductSlice'
-import listUser from '../Feature/UserSlice'
-import listProCart from '../Feature/CartSlice'
+import listProducts from '../Redux/ProductSlice'
+import listUser from '../Redux/UserSlice'
+import listProCart from '../Redux/CartSlice'
+import listReceipts from '../Redux/ReceiptSlice'
 import { configureStore } from '@reduxjs/toolkit'
+import createSagaMiddleware from 'redux-saga'
+
+const saga= createSagaMiddleware();
 export const store = configureStore({
   reducer: {
       listProduct: listProducts,
       listUser: listUser,
-      listProCart: listProCart,
+      listProCart: listProCart, 
+      listReceipt: listReceipts, 
   }
-
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

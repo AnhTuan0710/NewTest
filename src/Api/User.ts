@@ -1,5 +1,5 @@
-import endpoid from "./Enpoind";
-import _http from "./apiClient";
+import endpoint from "./Endpoint";
+import client from "./apiClient";
 export const apiLoggin = (data: { login_id: string; password: string; }) => {
-    return _http.post(endpoid.API_LOGIN,data)
+    return client.post(endpoint.API_LOGIN,data)
 }

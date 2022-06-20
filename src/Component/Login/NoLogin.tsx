@@ -1,10 +1,12 @@
 import { FacebookOutlined, GooglePlusOutlined } from '@ant-design/icons';
-import React, { Component, useEffect, useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { apiLoggin } from '../../Api/User';
-import { useAppDispatch, useAppSelector } from '../../App/hook';
-import { getAllUser } from '../../Feature/UserSlice';
-import { UserType } from '../../TypeState/UserType';
+import { useAppDispatch } from '../../App/hook';
+import string from '../../Constants/String';
+import { pushUser } from '../../Redux/UserSlice';
+// import { getAllUser } from '../../Redux/UserSlice';
 
 export default function NoLogin() {
     const [email, setEmail] = useState("");
@@ -14,18 +16,12 @@ export default function NoLogin() {
     const [password, setPassWord] = useState("");
     let navigate = useNavigate();
     const dispath = useAppDispatch();
-    const listData = useAppSelector(state => state.listUser);
-    useEffect(() => {
-        dispath(getAllUser())
-    }, []);
-    const user: UserType[] = listData.listUser;
-    console.log(user);
-    
+    // useEffect(() => {
+    //     dispath(getAllUser())
+    // }, []);
     const handleEmail = (value: string) => {
-
         let status = false;
         setEmail(value);
-
         if (value === null) {
             setMsgEmail("*Please input your email");
         } else {
@@ -33,13 +29,6 @@ export default function NoLogin() {
             setMsgEmail("");
         }
         return status;
-    };
-    const validateEmail = (email: string) => {
-        return String(email)
-            .toLowerCase()
-            .match(
-                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            );
     };
     const handlePassword = (value: string) => {
         let status = false;
@@ -59,22 +48,35 @@ export default function NoLogin() {
         setShowPw(!showPw);
     };
     const handleSubmit = async () => {
-       for(let i=0; i<user.length; i++)
-       {
-           if(password == user[i].password && email == user[i].name)
-           {
-               localStorage.setItem('userName', user[i].name)
-               localStorage.setItem('userAddress', user[i].address)
-               localStorage.setItem('userID', user[i].id)
-               localStorage.setItem('login', 'done')
-               navigate('/')
-               break;
-           }
-           else{
-               setMsgPassword('Tài khoản hoặc mật khẩu không chính xác')
-               continue;
-           }
-       }
+        try {
+            const res = await apiLoggin({
+                login_id: email,
+                password: password
+            })
+            console.log(res);
+            if (res.status === 200) {
+                dispath(pushUser(res.data.access_token,res.data.account.full_name))
+                localStorage.setItem('access_token', res.data.access_token)
+                localStorage.setItem('userName',res.data.account.full_name)
+                localStorage.setItem('userPhone',res.data.account.phone_no)
+                const tokken = localStorage.getItem('access_token')
+                const respon = await axios.post('https://medlink-apiv2.ecomedic.vn/api/auth/signin', {
+                    login_id: email,
+                    password: password,
+                },
+                    {
+                        headers: {
+                            authorization: `${tokken}`
+                        }
+                    }
+                )
+                console.log(respon);
+
+                navigate('/')
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
     return (
         <div style={{
@@ -82,7 +84,7 @@ export default function NoLogin() {
         }}>
             <h3 style={{
                 color: 'red', fontFamily: "cursive"
-            }}>Đăng nhập vào tài khoản</h3>
+            }}>{string.LoginWithAccount}</h3>
             <section className="vh-100" style={{
                 textAlign: 'center'
             }}>
@@ -95,7 +97,7 @@ export default function NoLogin() {
                         <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
                             <form>
                                 <div className="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                                    <p className="lead fw-normal mb-0 me-3">Sign in with</p>
+                                    <p className="lead fw-normal mb-0 me-3">{string.SignInWith}</p>
                                     <button type="button" className="btn btn-primary btn-floating mx-1">
                                         <GooglePlusOutlined />
                                     </button>
@@ -132,18 +134,18 @@ export default function NoLogin() {
                                     <div className="form-check mb-0">
                                         <input className="form-check-input me-2" type="checkbox" value="" id="form2Example3" onClick={handleShow} />
                                         <label className="form-check-label" >
-                                            Show password
+                                           {string.ShowPassword}
                                         </label>
                                     </div>
-                                    <a href="#!" className="text-body">Forgot password?</a>
+                                    <a href="#!" className="text-body">{string.ForgotPassword}</a>
                                 </div>
                                 <div className="text-center text-lg-start mt-4 pt-2">
                                     <button type="button" className="btn btn-primary btn-lg" onClick={handleSubmit}
                                         style={{
                                             paddingLeft: ' 2.5rem', paddingRight: '2.5rem'
-                                        }}     >Login</button>
-                                    <p className="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="#!"
-                                        className="link-danger">Register</a></p>
+                                        }}     >{string.Login}</button>
+                                    <p className="small fw-bold mt-2 pt-1 mb-0">{string.NoAccount} <a href="#!"
+                                        className="link-danger">{string.Register}</a></p>
                                 </div>
                             </form>
                         </div>
