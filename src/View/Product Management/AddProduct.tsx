@@ -2,12 +2,18 @@ import { CheckCircleOutlined, CheckSquareOutlined, DeleteOutlined, EditOutlined,
 import { Input, Select } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../App/hook'
-import { getAllProduct, deleteProduct } from '../../Redux/ProductSlice';
+import { getAllProduct, deleteProduct, getAllProduct2 } from '../../Redux/ProductSlice';
 import { ProductType } from '../../DataType/ProductType';
 import 'antd/dist/antd.css';
-import { apiAddPro } from '../../Api/medicine';
+import { apiAddPro, apiKind } from '../../Api/medicine';
 import string from '../../Constants/String';
 import { BoxButonUnit, BoxEmpty, BoxImage, BoxInfor, BoxInput, BoxInputInfo, BoxInputInfoLeft, BoxInputInforRight, BoxListUnit, BoxModal, BoxModalPopup, BoxShowList, BoxTitle, BoxUnit, BoxUploadImage, InputAddUnit, InputCancelUnit, InputYeslUnit, LaybalStyle, TextInforAdvanced, TextInforBase } from '../../Style/Addproduct';
+import { getAllKind } from '../../Redux/KindSlice';
+import { getAllGround } from '../../Redux/GroupSlice';
+import { ObjectProductAddType } from '../../DataType/ObjectProductAddType';
+import axios from 'axios';
+import { getKindFetch } from '../../Redux/saga/Kind';
+import { KindType } from '../../DataType/KinhType';
 
 type DrugUnit = {
     active_flg: number,
@@ -148,14 +154,25 @@ const listUnit: DrugUnit[] = [
 export default function AddProduct() {
     const dispath = useAppDispatch();
     const listData = useAppSelector(state => state.listProduct);
-    const user = useAppSelector(state => state.listUser)
-    console.log(user === []);
+    const listGroup = useAppSelector(state => state.listGroup)
 
+    useEffect(() => {
+      dispath(getKindFetch())
+    }, [dispath]);
+    
+    const listKindSaga:KindType[] = useAppSelector(state => state.kinds.kinds)
+    console.log(listKindSaga);
+    const user = useAppSelector(state => state.listUser)
     if (user !== []) {
         const n = user.length
-        // console.log(user[n-1].userTokken);
     }
-
+    const listKind = useAppSelector(state => state.listKind)
+    useEffect(() => {
+        dispath(getAllKind())
+        dispath(getAllGround())
+    }, [])
+    const listGroupNew= [...listGroup.listGround]
+    const listKindNew= [...listKind.listKind]
     const [display, setDispaly] = useState('none');
     const [listDv, setListDv] = useState<DrugUnit[]>([]);
     const acess_tokken = localStorage.getItem('access_token')
@@ -178,6 +195,17 @@ export default function AddProduct() {
         wholesale_price: 0,
         wholesale_price_before_vat: 0,
     };
+    const [listKindApi, setListKindApi] = useState([])
+    const getListKind = async () => {
+        try{
+            const res = await apiKind()
+            setListKindApi(res.data)
+        }
+        catch(error){
+            console.log(error);
+        }
+    };
+    
     const [dataArray, setDataArray] = useState(initStatedrug_Init);
     const onChangeUnit = (e: any, index: number) => {
         const B = [...listDv]
@@ -211,6 +239,7 @@ export default function AddProduct() {
             return test
         });
     }
+
     const initState: Data = {
         account_id: 0,
         active_flg: 1,
@@ -337,13 +366,26 @@ export default function AddProduct() {
             drg_drug_cd: drg_drug_cd,
             drg_drug_name: drg_drug_name,
             drg_ref_cd: drg_ref_cd,
-            drug_group: drug_group,
-            drug_kind: drug_kind,
             vat_percent: vat_percent,
             package_desc: package_desc,
             [e.target.id]: e.target.value,
-        });
+        })
     };
+    useEffect(() => {
+        getListKind()
+    }, [])
+    const onChangeKind = (e:any) => {
+        setData({
+            ...data,
+            drug_kind: e,
+        })
+    }
+    const onChangeGroup = (e:any) => {
+        setData({
+            ...data,
+            drug_group: e,
+        })
+    }
     const handleClose = () => {
         setDispaly('none')
         setListDv([])
@@ -351,17 +393,17 @@ export default function AddProduct() {
     const handleAdd = () => {
         setDispaly('block')
     }
-
+    
     const handleYes = async () => {
         data.drug_units = listDv
         data.vat_percent = Number(data.vat_percent)
-        const new_drugs = [];
+        const new_drugs: Data[] = [];
         new_drugs.push(data)
-        const dataList = {
+        const dataObject : ObjectProductAddType = {
             new_drugs
         };
         try {
-            const res = await apiAddPro(dataList, acess_tokken)
+            const res = await apiAddPro(dataObject,acess_tokken)
             if (res.status === 200) {
                 alert('Thêm thành công sản phẩm')
             }
@@ -375,6 +417,7 @@ export default function AddProduct() {
     useEffect(() => {
         dispath(getAllProduct())
     }, [])
+
     var showList = listDv.map((item, index) => {
         return (
             <BoxShowList key={index}>
@@ -424,36 +467,39 @@ export default function AddProduct() {
             </BoxShowList>
         )
     })
-
     const listSanPham: ProductType[] = listData.listProduct
     var showListSanPham = listSanPham.map((item, index) => {
         return (
-            <div>
+            <div key={index}>
                 <table style={{ margin: '5px auto' }}>
-                    <tr>
-                        <td style={{ width: '30px' }}>{item.id}</td>
-                        <td style={{ width: '200px' }}>{item.name}</td>
-                        <td style={{ width: '200px' }}>{item.price}</td>
-                        <td style={{ width: '200px' }}>{item.init}</td>
-                        <td style={{ width: '100px' }}>
-                            <img src={item.image} alt='' style={{ width: '90px', height: '90px' }}></img>
-                        </td>
-                        <td style={{ width: '100px' }}>
-                            <EditOutlined style={{ color: 'darkblue' }} />
-                        </td>
-                        <td style={{ width: '100px' }}>
-                            <DeleteOutlined style={{ color: 'darkred' }} onClick={() => {
-                                alert('Xóa sản phâm thành công')
-                                dispath(deleteProduct(item.id))
-                            }} />
-                        </td>
-                    </tr>
+                    <thead></thead>
+                    <tbody>
+                        <tr>
+                            <td style={{ width: '30px' }}>{item.id}</td>
+                            <td style={{ width: '200px' }}>{item.name}</td>
+                            <td style={{ width: '200px' }}>{item.price}</td>
+                            <td style={{ width: '200px' }}>{item.init}</td>
+                            <td style={{ width: '100px' }}>
+                                <img src={item.image} alt='' style={{ width: '90px', height: '90px' }}></img>
+                            </td>
+                            <td style={{ width: '100px' }}>
+                                <EditOutlined style={{ color: 'darkblue' }} />
+                            </td>
+                            <td style={{ width: '100px' }}>
+                                <DeleteOutlined style={{ color: 'darkred' }} onClick={() => {
+                                    alert('Xóa sản phâm thành công')
+                                    dispath(deleteProduct(item.id))
+                                }} />
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot></tfoot>
                 </table>
             </div>
         )
     })
     return (
-        <div>
+        <div >
             <h3 style={{ marginTop: '30px' }}>{string.ListProduct}</h3>
             <div style={{ textAlign: 'left', margin: '20px 30px ' }}>
                 <div onClick={handleAdd}>
@@ -523,18 +569,26 @@ export default function AddProduct() {
                                     <BoxInputInforRight>
                                         <BoxInput >
                                             <LaybalStyle>Ngành hàng: </LaybalStyle>
-                                            <Select id='drug_kind' style={{ width: '70%', flex: 'right' }}>
-                                                <Select.Option id='duocMyPham' value='duocMyPham'>Dược mỹ phẩm</Select.Option>
-                                                <Select.Option id='khac' value='khac'>Khác</Select.Option>
-                                                <Select.Option id='lamDep' value='lamDep'>Làm đẹp</Select.Option>
+                                            <Select value={drug_kind}  id='drug_kind' style={{ width: '70%', flex: 'right' }}  onChange={onChangeKind}>
+                                                {
+                                                    listKindSaga.map((item, index) => {
+                                                        return (
+                                                            <Select.Option  key={index} value={item.code}>{item.name}</Select.Option>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </BoxInput>
                                         <BoxInput>
                                             <LaybalStyle>Phân nhóm: </LaybalStyle>
-                                            <Select id='drug_group' style={{ width: '70%', flex: 'right' }}>
-                                                <Select.Option id='duocMyPham' value='duocMyPham'>Dược mỹ phẩm</Select.Option>
-                                                <Select.Option id='khac' value='khac'>Khác</Select.Option>
-                                                <Select.Option id='lamDep' value='lamDep'>Làm đẹp</Select.Option>
+                                            <Select value={drug_group} id='drug_group' style={{ width: '70%', flex: 'right' }}  onChange={onChangeGroup}>
+                                                {
+                                                    listGroupNew.map((item, index) => {
+                                                        return (
+                                                            <Select.Option key={index}  value={item.code}>{item.name}</Select.Option>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </BoxInput>
                                         <BoxInput >
@@ -612,15 +666,19 @@ export default function AddProduct() {
                 </div>
             </div>
             <table style={{ margin: '5px auto' }}>
-                <tr style={{ fontWeight: 'bold' }}>
-                    <td style={{ width: '30px' }}>ID</td>
-                    <td style={{ width: '200px' }}>Name</td>
-                    <td style={{ width: '200px' }}>Price</td>
-                    <td style={{ width: '200px' }}>Init</td>
-                    <td style={{ width: '100px' }}>Image</td>
-                    <td style={{ width: '100px' }}>Update</td>
-                    <td style={{ width: '100px' }}>Delete</td>
-                </tr>
+                <thead></thead>
+                <tbody>
+                    <tr style={{ fontWeight: 'bold' }}>
+                        <td style={{ width: '30px' }}>ID</td>
+                        <td style={{ width: '200px' }}>Name</td>
+                        <td style={{ width: '200px' }}>Price</td>
+                        <td style={{ width: '200px' }}>Init</td>
+                        <td style={{ width: '100px' }}>Image</td>
+                        <td style={{ width: '100px' }}>Update</td>
+                        <td style={{ width: '100px' }}>Delete</td>
+                    </tr>
+                </tbody>
+                <tfoot></tfoot>
             </table>
             {listSanPham ? showListSanPham : ""}
 

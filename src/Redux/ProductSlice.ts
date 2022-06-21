@@ -9,15 +9,21 @@ const initialState = {
 export const getAllProduct: any = createAsyncThunk(
     "getAllProduct",
     async () => {
+        
         try {
             const res = await axios.get(api.getAllProduct);
             return res.data;
         }
         catch (error) {
             console.log(error);
+            return []
         }
     }
 );
+
+export const getAllProduct2 = () => ({
+    type: "getAllProduct"
+})
 export const getProduct = createAsyncThunk(
     "getProduct",
     async (payload) => {
@@ -57,6 +63,7 @@ export const AddNewProduct = createAsyncThunk(
         }
     }
 );
+
 export const AllProductSlice = createSlice({
     name: "getAllProduct",
     initialState,

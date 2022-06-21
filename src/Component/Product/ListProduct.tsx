@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../App/hook'
 import string from '../../Constants/String';
-import { getAllProduct } from '../../Redux/ProductSlice';
+import { getAllProduct, getAllProduct2 } from '../../Redux/ProductSlice';
 import { ProductType } from '../../DataType/ProductType';
 
 export default function AddNewProduct() {

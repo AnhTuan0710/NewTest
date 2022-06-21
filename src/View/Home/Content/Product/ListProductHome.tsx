@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../App/hook'
 import string from '../../../../Constants/String';
 import { addPro, editPro } from '../../../../Redux/CartSlice';
-import { getAllProduct } from '../../../../Redux/ProductSlice';
+import { getAllProduct, getAllProduct2 } from '../../../../Redux/ProductSlice';
 import { ProductType } from '../../../../DataType/ProductType';
 import { BoxListPro, BoxProduct, ButtonAddCart } from '../../../../Style/ListProductHome';
 

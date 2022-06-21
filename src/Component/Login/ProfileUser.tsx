@@ -1,7 +1,5 @@
-import { EditOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { PhoneOutlined, UserOutlined } from '@ant-design/icons';
 import React from 'react'
-import { Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import string from '../../Constants/String';
 import { TitleHeading, TitleInfo } from '../../Style/ProfileLogin';
